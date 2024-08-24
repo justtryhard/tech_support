@@ -33,7 +33,7 @@ def main(page: ft.Page) -> None:
             current_ticket.append(ticket1.value)
             current_ticket.append(ticket2.value)
             current_ticket.append(ticket3.value)
-            # тут current_ticket должен отправиться в бд в виде заявки
+            #    тут current_ticket должен отправиться в бд в виде заявки
             print(current_ticket)
             page.clean()
             page.go('/ticket1')
