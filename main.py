@@ -1,6 +1,10 @@
 import flet as ft
 from flet import View, Page, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
+import sqlite3
+from sqlite3 import Error
+
+user_ip = ""
 
 
 def main(page: ft.Page) -> None:
@@ -9,27 +13,37 @@ def main(page: ft.Page) -> None:
     ticket2 = ft.TextField(label="Введите контактный номер или email", width=400)
     ticket3 = ft.TextField(label="Опишите суть проблемы")
     current_ticket = []
-    user_ip = ('IP: 77.86.142.143, '
-               'Маска: 255.255.255.0, '
-               'Шлюз:77.86.142.1,'
-               'DNS: 10.30.30.2, '
-               'DNS: 10.30.30.3')
-
 
     def btn_click(e):
-        if not ticket1.value:
-            ticket1.error_text = "Введите номер договора"
-            page.update()
+        cnt = 0
+        with sqlite3.connect('db/database.db') as db:
+            cursor = db.cursor()
+            cursor.execute(""" SELECT id from clients """)
+            rows = cursor.fetchall()
+            ids = [row[0] for row in rows]
+            if int(ticket1.value) not in ids or not ticket1.value:
+                ticket1.error_text = "Номер договора не найден"
+                page.update()
+            else:
+                ticket1.error_text = None
+                page.update()
+                cnt += 1
 
-        #в идеале допилить проверку на существование данного номера договора
-
-        elif not ticket2.value:
+        if not ticket2.value:
             ticket2.error_text = "Укажите контактные данные"
             page.update()
-        elif not ticket3.value:
+        else:
+            ticket2.error_text = None
+            page.update()
+            cnt += 1
+        if not ticket3.value:
             ticket3.error_text = "Опишите суть проблемы"
             page.update()
         else:
+            ticket3.error_text = None
+            page.update()
+            cnt += 1
+        if cnt >= 3:
             current_ticket.append(ticket1.value)
             current_ticket.append(ticket2.value)
             current_ticket.append(ticket3.value)
@@ -39,15 +53,20 @@ def main(page: ft.Page) -> None:
             page.go('/ticket1')
 
     def btn_click_for_ip(e):
-        if not ticket1.value:
-            ticket1.error_text = "Введите номер договора"
-            page.update()
-            # также нужна проверка на существование договора в бд
-        else:
-            # здесь программа должна отправить ticket1.value в бд, достать соответствующее значение
-            # и упаковать его в переменную user_ip
-            page.clean()
-            page.go('/ips1')
+        with sqlite3.connect('db/database.db') as db:
+            cursor = db.cursor()
+            cursor.execute(""" SELECT id, ip FROM clients """)
+            rows = cursor.fetchall()
+            ips = {row[0]: row[1] for row in rows}
+            if int(ticket1.value) not in ips or not ticket1.value:
+                ticket1.error_text = "Номер договора не найден"
+                page.update()
+            else:
+                global user_ip
+                user_ip = str(ips.get(int(ticket1.value)))
+                print(user_ip)
+                page.clean()
+                page.go('/ips1')
 
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
