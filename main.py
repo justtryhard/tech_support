@@ -2,7 +2,7 @@ import flet as ft
 from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
-from db.database import Ticket
+from db.ticket import Ticket
 
 user_ip = ""
 
