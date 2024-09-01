@@ -1,8 +1,8 @@
 import flet as ft
-from flet import View, Page, AppBar, ElevatedButton, Text
+from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
-from sqlite3 import Error
+from db.database import Ticket
 
 user_ip = ""
 
@@ -18,7 +18,7 @@ def main(page: ft.Page) -> None:
         cnt = 0
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
-            cursor.execute(""" SELECT id from clients """)
+            cursor.execute(""" SELECT id FROM clients """)
             rows = cursor.fetchall()
             ids = [row[0] for row in rows]
             if int(ticket1.value) not in ids or not ticket1.value:
@@ -44,11 +44,8 @@ def main(page: ft.Page) -> None:
             page.update()
             cnt += 1
         if cnt >= 3:
-            current_ticket.append(ticket1.value)
-            current_ticket.append(ticket2.value)
-            current_ticket.append(ticket3.value)
-            #    тут current_ticket должен отправиться в бд в виде заявки
-            print(current_ticket)
+            a = Ticket()
+            a.new_ticket(ticket1.value, ticket2.value, ticket3.value)
             page.clean()
             page.go('/ticket1')
 
@@ -147,6 +144,7 @@ def main(page: ft.Page) -> None:
                     route='/ips1',
                     controls=[
                         AppBar(title=Text('Узнать настройки для роутера'), bgcolor='blue'),
+                        Text(value='Ваш IP адрес:', size=30),
                         Text(value=user_ip, size=30),
                         ElevatedButton(text='В начало', on_click=lambda _: page.go('/'))
                     ],
