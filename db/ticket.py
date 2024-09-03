@@ -47,3 +47,22 @@ class Ticket:
             if conn:
                 conn.close()
                 print("Соединение закрыто")
+
+    def set_closed(a):
+        try:
+            conn = sqlite3.connect('db/database.db')
+            cursor = conn.cursor()
+            print("Подключение ОК")
+            cursor.execute("UPDATE tickets SET closed=1 WHERE id = ?", [a])
+            conn.commit()
+            print("Заявка закрыта")
+
+            cursor.close()
+
+        except sqlite3.Error as error:
+            print("Ошибка при закрытии тикета", error)
+        finally:
+            if conn:
+                conn.close()
+                print("Соединение закрыто")
+

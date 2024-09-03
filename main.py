@@ -3,27 +3,50 @@ from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
 from db.ticket import Ticket
+from itertools import chain
+
 
 user_ip = ""
-
+ttr: int
 
 def main(page: ft.Page) -> None:
     page.title = 'Support'
     ticket1 = ft.TextField(label="Введите номер договора", width=250)
     ticket2 = ft.TextField(label="Введите контактный номер или email", width=400)
     ticket3 = ft.TextField(label="Опишите суть проблемы")
-    current_ticket = []
 
     def btn_click(e):
         cnt = 0
         with sqlite3.connect('db/database.db') as db:
+            problem_trigger = False
             cursor = db.cursor()
             cursor.execute(""" SELECT id FROM clients """)
+            cursor1 = db.cursor()
+            cursor1.execute(""" SELECT id, clients FROM problems WHERE closed = 0 """)
             rows = cursor.fetchall()
             ids = [row[0] for row in rows]
+            rows1 = cursor1.fetchall()
+            p_clients = [row[1] for row in rows1]
+            list_clients = []
+            for elem in p_clients:
+                list_clients.append(list(elem.split(", ")))
+            problems_and_clients = dict(zip([row[0] for row in rows1], list_clients))
+            for elem in problems_and_clients.values():
+                if ticket1.value in elem:
+                    global problem
+                    problem = list(problems_and_clients.keys())[list(problems_and_clients.values()).index(elem)]
+                    problem_trigger = True
+                    cursor2 = db.cursor()
+                    cursor2.execute(""" SELECT time_to_resolve FROM problems WHERE id = ?""", [problem])
+                    rows = cursor2.fetchall()
+                    global ttr
+                    ttr = [row[0] for row in rows]
             if int(ticket1.value) not in ids or not ticket1.value:
                 ticket1.error_text = "Номер договора не найден"
                 page.update()
+            elif problem_trigger is True:
+                page.clean()
+                page.go('/ticket2')
             else:
                 ticket1.error_text = None
                 page.update()
@@ -109,8 +132,27 @@ def main(page: ft.Page) -> None:
                 View(
                     route='/ticket1',
                     controls=[
-                        AppBar(title=Text('Спасибо!'), bgcolor='blue'),
+                        AppBar(title=Text('Спасибо за обращение!'), bgcolor='blue'),
                         Text(value='Ваша заявка принята! В ближайшее время с Вами свяжутся', size=30),
+                        ElevatedButton(text='В начало', on_click=lambda _: page.go('/'))
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=26
+
+                )
+
+            )
+
+        if page.route == '/ticket2':
+            page.views.append(
+                View(
+                    route='/ticket2',
+                    controls=[
+                        AppBar(title=Text('Спасибо за обращение!'), bgcolor='blue'),
+                        Text(value='В текущий момент по Вашему адресу наблюдаются технические неполадки', size=30),
+                        Text(value='Срок устранения:', size=30),
+                        Text(value=ttr, size=30),
                         ElevatedButton(text='В начало', on_click=lambda _: page.go('/'))
                     ],
                     vertical_alignment=MainAxisAlignment.CENTER,
