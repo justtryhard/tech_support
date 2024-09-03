@@ -70,9 +70,4 @@ class Problem:
                 conn.close()
                 print("Соединение закрыто")
 
-    def add_client(self, *args):
-        with sqlite3.connect('database.db') as db:
-            cursor = db.cursor()
-            cursor.executemany('INSERT INTO problems (clients) values', args)
 
-            rows = cursor.fetchall()
