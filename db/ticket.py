@@ -48,12 +48,12 @@ class Ticket:
                 conn.close()
                 print("Соединение закрыто")
 
-    def set_closed(a):
+    def set_closed(num):
         try:
             conn = sqlite3.connect('db/database.db')
             cursor = conn.cursor()
             print("Подключение ОК")
-            cursor.execute("UPDATE tickets SET closed=1 WHERE id = ?", [a])
+            cursor.execute("UPDATE tickets SET closed=1 WHERE id = ?", [num])
             conn.commit()
             print("Заявка закрыта")
 
