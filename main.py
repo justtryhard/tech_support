@@ -3,11 +3,10 @@ from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
 from db.ticket import Ticket
-from itertools import chain
-
 
 user_ip = ""
 ttr: int
+
 
 def main(page: ft.Page) -> None:
     page.title = 'Support'
@@ -33,7 +32,6 @@ def main(page: ft.Page) -> None:
             problems_and_clients = dict(zip([row[0] for row in rows1], list_clients))
             for elem in problems_and_clients.values():
                 if ticket1.value in elem:
-                    global problem
                     problem = list(problems_and_clients.keys())[list(problems_and_clients.values()).index(elem)]
                     problem_trigger = True
                     cursor2 = db.cursor()

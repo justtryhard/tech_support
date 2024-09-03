@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 from ticket import Ticket
-from problem import Problem, set_closed
+from problem import Problem, problem_set_closed
 
 
 # создаём таблицы
@@ -85,7 +85,7 @@ b.new_problem('Тверская 28', "Обрыв оптической линии
 c = Problem()
 c.new_problem('Авиаторов 10', "Авария на трансформаторной подстанции", "289, 376",
               "12/09/2024, 10:00")
-set_closed(2) # закроем аварию с id=2
+problem_set_closed(2) # закроем аварию с id=2
 d = Problem()
 d.new_problem('Ленина 54', "Нет электричества", "954, 755",
               "20/09/2024, 17:00")
