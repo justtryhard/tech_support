@@ -39,7 +39,7 @@ def main(page: ft.Page) -> None:
                     rows = cursor2.fetchall()
                     global ttr
                     ttr = [row[0] for row in rows]
-            if int(ticket1.value) not in ids or not ticket1.value:
+            if not ticket1.value or int(ticket1.value) not in ids:
                 ticket1.error_text = "Номер договора не найден"
                 page.update()
             elif problem_trigger is True:
@@ -76,7 +76,7 @@ def main(page: ft.Page) -> None:
             cursor.execute(""" SELECT id, ip FROM clients """)
             rows = cursor.fetchall()
             ips = {row[0]: row[1] for row in rows}
-            if int(ticket1.value) not in ips or not ticket1.value:
+            if not ticket1.value or int(ticket1.value) not in ips:
                 ticket1.error_text = "Номер договора не найден"
                 page.update()
             else:
