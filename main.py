@@ -28,7 +28,7 @@ def main(page: ft.Page) -> None:
             p_clients = [row[1] for row in rows1]
             list_clients = []
             for elem in p_clients:
-                list_clients.append(list(elem.split(", ")))
+                list_clients.append(list(elem.split(",")))
             problems_and_clients = dict(zip([row[0] for row in rows1], list_clients))
             for elem in problems_and_clients.values():
                 if ticket1.value in elem:

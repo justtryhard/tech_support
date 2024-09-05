@@ -27,21 +27,21 @@ def print_problem(e):
 
 def set_ttr(x, y):
     try:
-        sqlite_connection = sqlite3.connect('db/database.db')
-        cursor = sqlite_connection.cursor()
+        conn = sqlite3.connect('db/database.db')
+        cursor = conn.cursor()
         print("Подключен к SQLite")
         sql_insert = """UPDATE problems set time_to_resolve = ? where id = ?"""
         data_tuple = (y, x)
         cursor.execute(sql_insert, data_tuple)
-        sqlite_connection.commit()
+        conn.commit()
         print("Запись успешно вставлена в таблицу", cursor.rowcount)
         cursor.close()
 
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
     finally:
-        if sqlite_connection:
-            sqlite_connection.close()
+        if conn:
+            conn.close()
             print("Соединение с SQLite закрыто")
 
 def problem_set_closed(num):

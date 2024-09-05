@@ -4,7 +4,7 @@ from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAli
 import sqlite3
 from sqlite3 import Error
 from db.ticket import Ticket, actual_tickets, pre_ticket, print_ticket, set_closed
-from db.problem import problem_set_closed, actual_problems, pre_problem, print_problem, set_ttr
+from db.problem import Problem, problem_set_closed, actual_problems, pre_problem, print_problem, set_ttr
 
 current_ticket: int
 current_problem: int
@@ -14,6 +14,9 @@ def main(page: ft.Page) -> None:
     page.title = 'Support'
     ticket_enter = ft.TextField(label="Укажите ID заявки", width=250)
     problem_enter = ft.TextField(label="Укажите ID аварии", width=250)
+    problem1 = ft.TextField(label="Введите адрес", width=250)
+    problem2 = ft.TextField(label="Введите описание проблемы", width=250)
+    problem3 = ft.TextField(label="Укажите клиентов, затронутых данной аварией, через запятую (без пробела)", width=250)
     ttr_enter = ft.TextField(label="Укажите время в формате: ДД/ММ/ГГГГ, ЧЧ:ММ", width=250)
     ticket1 = ft.TextField(label="Введите номер договора", width=250)
     ticket2 = ft.TextField(label="Введите контактный номер или email", width=400)
@@ -52,6 +55,44 @@ def main(page: ft.Page) -> None:
             a.new_ticket(ticket1.value, ticket2.value, ticket3.value)
             page.clean()
             page.go('/new_ticket1')
+
+
+    def btn_click_for_problem(e):
+        cnt = 0
+        if not problem1.value:
+            ticket1.error_text = "Введите адрес"
+            page.update()
+        else:
+            problem1.error_text = None
+            page.update()
+            cnt += 1
+
+        if not problem2.value:
+            problem2.error_text = "Укажите описание"
+            page.update()
+        else:
+            problem2.error_text = None
+            page.update()
+            cnt += 1
+        if not problem3.value:
+            problem3.error_text = "Укажите клиентов"
+            page.update()
+        else:
+            problem3.error_text = None
+            page.update()
+            cnt += 1
+        if not ttr_enter.value:
+            ttr_enter.error_text = "Введите TTR"
+            page.update()
+        else:
+            ttr_enter.error_text = None
+            page.update()
+            cnt += 1
+        if cnt >= 4:
+            a = Problem()
+            a.new_problem(problem1.value, problem2.value, problem3.value, ttr_enter.value)
+            page.clean()
+            page.go('/new_problem1')
 
     def ticket_watch(e):
         with sqlite3.connect('db/database.db') as db:
@@ -112,7 +153,7 @@ def main(page: ft.Page) -> None:
                 problem_enter.error_text = "Авария не найдена"
                 page.update()
             else:
-                set_closed(int(problem_enter.value))
+                problem_set_closed(int(problem_enter.value))
                 page.clean()
                 page.go('/problems3')
 
@@ -235,11 +276,12 @@ def main(page: ft.Page) -> None:
                     route='/problems',
                     controls=[
                         AppBar(title=Text('Аварии'), bgcolor='blue'),
-                        Text(value='Актуальные аварии (id и адрес:', size=15),
+                        Text(value='Актуальные аварии (id и адрес):', size=15),
                         Text(value=actual_problems(), size=20),
                         Text(value='Посмотреть информацию об аварии:', size=15),
                         problem_enter,
                         ft.ElevatedButton(text="Открыть", on_click=problem_watch),
+                        ft.ElevatedButton(text="СОЗДАТЬ НОВУЮ АВАРИЮ", on_click=lambda _: page.go('/new_problem')),
                         ElevatedButton(text='Назад', on_click=lambda _: page.go('/'))
                     ],
 
@@ -307,7 +349,40 @@ def main(page: ft.Page) -> None:
 
                 )
             )
+        if page.route == '/new_problem':
+            page.views.append(
+                View(
+                    route='/new_problem',
+                    controls=[
+                        AppBar(title=Text('Новая авария'), bgcolor='blue'),
+                        Text(value='Заполните форму ниже:', size=30),
+                        problem1, problem2, problem3, ttr_enter,
+                        ft.ElevatedButton(text="Создать", on_click=btn_click_for_problem),
+                        ElevatedButton(text='Назад', on_click=lambda _: page.go('/problems'))
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=26
 
+                )
+
+            )
+        if page.route == '/new_problem1':
+            page.views.append(
+                View(
+                    route='/new_problem1',
+                    controls=[
+                        AppBar(title=Text('Авария создана'), bgcolor='blue'),
+                        ElevatedButton(text='К авариям', on_click=lambda _: page.go('/problems')),
+                        ElevatedButton(text='В начало', on_click=lambda _: page.go('/'))
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=26
+
+                )
+
+            )
         page.update()
 
     def view_pop(e: ViewPopEvent) -> None:

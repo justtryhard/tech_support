@@ -1,11 +1,11 @@
 import sqlite3
 from sqlite3 import Error
-from ticket import Ticket
-from problem import Problem, problem_set_closed
+from db.ticket import Ticket, set_closed
+from db.problem import Problem, problem_set_closed
 
 
 # создаём таблицы
-with sqlite3.connect('database.db') as db:
+with sqlite3.connect('db/database.db') as db:
     cursor = db.cursor()
     query1 = """ CREATE TABLE IF NOT EXISTS clients (id INTEGER, name TEXT, address TEXT,
     ip TEXT) """
@@ -77,16 +77,28 @@ with sqlite3.connect('database.db') as db:
 #создаём аварии
 
 a = Problem()
-a.new_problem('Елецкая 36', "Нет электричества", "233, 247, 387",
+a.new_problem('Елецкая 36', "Нет электричества", "233,247,387",
               "15/09/2024, 18:00")
 b = Problem()
 b.new_problem('Тверская 28', "Обрыв оптической линии", "278",
               "18/09/2024, 14:00")
 c = Problem()
-c.new_problem('Авиаторов 10', "Авария на трансформаторной подстанции", "289, 376",
+c.new_problem('Авиаторов 10', "Авария на трансформаторной подстанции", "289,376",
               "12/09/2024, 10:00")
 problem_set_closed(2) # закроем аварию с id=2
 d = Problem()
-d.new_problem('Ленина 54', "Нет электричества", "954, 755",
+d.new_problem('Ленина 54', "Нет электричества", "954,755",
               "20/09/2024, 17:00")
 
+#создаём заявки
+e = Ticket()
+(e.new_ticket('954', "89999999999", "Нет интернета"))
+f = Ticket()
+(f.new_ticket('845', "88888888888", "Нестабильная работа услуги"))
+g = Ticket()
+(g.new_ticket('788', "87777777777", "Отсутствует услуга"))
+h = Ticket()
+(h.new_ticket('867', "86666666666", "Отсутствует услуга"))
+i = Ticket()
+(i.new_ticket('567', "85555555555", "Отсутствует услуга"))
+set_closed(2)
