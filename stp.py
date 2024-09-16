@@ -29,7 +29,10 @@ def main(page: ft.Page) -> None:
             cursor.execute(""" SELECT id FROM clients """)
             rows = cursor.fetchall()
             ids = [row[0] for row in rows]
-            if not ticket1.value or int(ticket1.value) not in ids:
+            if not ticket1.value.isdigit():
+                ticket1.error_text = "Допустимы только цифры"
+                page.update()
+            elif not ticket1.value or int(ticket1.value) not in ids:
                 ticket1.error_text = "Номер договора не найден"
                 page.update()
             else:
@@ -100,7 +103,10 @@ def main(page: ft.Page) -> None:
             cursor.execute(""" SELECT id FROM tickets""")
             rows = cursor.fetchall()
             ids = [row[0] for row in rows]
-            if not ticket_enter.value or int(ticket_enter.value) not in ids:
+            if not ticket_enter.value.isdigit():
+                ticket_enter.error_text = "Допустимы только цифры"
+                page.update()
+            elif not ticket_enter.value or int(ticket_enter.value) not in ids:
                 ticket_enter.error_text = "Заявка не найдена"
                 page.update()
             else:
@@ -129,7 +135,10 @@ def main(page: ft.Page) -> None:
             cursor.execute(""" SELECT id FROM problems""")
             rows = cursor.fetchall()
             ids = [row[0] for row in rows]
-            if not problem_enter.value or int(problem_enter.value) not in ids:
+            if not problem_enter.value.isdigit():
+                problem_enter.error_text = "Допустимы только цифры"
+                page.update()
+            elif not problem_enter.value or int(problem_enter.value) not in ids:
                 problem_enter.error_text = "Авария не найдена"
                 page.update()
             else:
