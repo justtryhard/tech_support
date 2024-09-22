@@ -1,5 +1,5 @@
+import database
 import flet as ft
-import os
 from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
@@ -94,7 +94,7 @@ def main(page: ft.Page) -> None:
                 page.go('/ips1')
 
     def database_runtest(e):
-        os.system('python database.py')
+        database.create()
         page.clean()
         page.go('/')
 
