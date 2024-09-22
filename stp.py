@@ -1,4 +1,5 @@
 import flet as ft
+import os
 from flet import View, AppBar, ElevatedButton, Text
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import sqlite3
@@ -33,7 +34,7 @@ def main(page: ft.Page) -> None:
                 ticket1.error_text = "Допустимы только цифры"
                 page.update()
             elif not ticket1.value or int(ticket1.value) not in ids:
-                ticket1.error_text = "Номер договора не найден"
+                ticket1.error_text = "Номер договора не найден в базе"
                 page.update()
             else:
                 ticket1.error_text = None
@@ -58,7 +59,6 @@ def main(page: ft.Page) -> None:
             a.new_ticket(ticket1.value, ticket2.value, ticket3.value)
             page.clean()
             page.go('/new_ticket1')
-
 
     def btn_click_for_problem(e):
         cnt = 0
@@ -166,6 +166,11 @@ def main(page: ft.Page) -> None:
                 page.clean()
                 page.go('/problems3')
 
+    def database_runtest(e):
+        os.system('python database.py')
+        page.clean()
+        page.go('/')
+
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
 
@@ -183,6 +188,25 @@ def main(page: ft.Page) -> None:
                 spacing=26
             )
         )
+        if page.route == '/db_trouble':
+            page.views.append(
+                View(
+                    route='/db_trouble',
+                    controls=[
+                        AppBar(title=Text('Некорректная БД'), bgcolor='blue'),
+                        Text(value='База данных отсутствует или имеет некорректный формат', size=30),
+                        Text(value='Если Вам необходимо протестировать приложение, запустите файл database.py '
+                                   'или нажмите на кнопку ниже '
+                                   '\nЭто создаcт тестовую БД', size=15),
+                        ElevatedButton(text='Запустить database.py', on_click=database_runtest)
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=26
+
+                )
+
+            )
 
         if page.route == '/tickets':
             page.views.append(
@@ -399,9 +423,28 @@ def main(page: ft.Page) -> None:
         top_view: View = page.views[-1]
         page.go(top_view.route)
 
-    page.on_route_change = route_change
-    page.on_view_pop = view_pop
-    page.go(page.route)
+    try:
+        conn = sqlite3.connect('db/database.db')
+        cursor = conn.cursor()
+        cursor.execute(""" SELECT id, address, description, clients, time_to_resolve, closed FROM problems """)
+        cursor.execute(""" SELECT id, name, address, ip FROM clients """)
+        cursor.execute(""" SELECT id, client_id, contact, description, closed FROM tickets """)
+        print("Подключен к SQLite")
+        cursor.close()
+        page.on_route_change = route_change
+        page.on_view_pop = view_pop
+        page.go(page.route)
+
+    except:
+        print("Ошибка при работе с SQLite")
+        page.on_route_change = route_change
+        page.on_view_pop = view_pop
+        page.go('/db_trouble')
+
+    finally:
+        if conn:
+            conn.close()
+            print("Соединение с SQLite закрыто")
 
 
 if __name__ == '__main__':
