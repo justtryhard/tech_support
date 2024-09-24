@@ -123,10 +123,12 @@ def main(page: ft.Page) -> None:
                     controls=[
                         AppBar(title=Text('Некорректная БД'), bgcolor='blue'),
                         Text(value='База данных отсутствует или имеет некорректный формат', size=30),
-                        Text(value='Если Вам необходимо протестировать приложение, запустите файл database.py '
-                                   'или нажмите на кнопку ниже '
-                                   '\nЭто создаcт тестовую БД', size=15),
-                        ElevatedButton(text='Запустить database.py', on_click=database_runtest)
+                        Text(value='Для работы приложения следует привести БД к формату, указанному ниже:', size=15),
+                        ft.Image(src='database.png'),
+                        Text(value='Если Вам необходимо протестировать работу приложения, '
+                                   'нажмите на кнопку ниже', size=15),
+                        ElevatedButton(text='Создать тестовую БД', on_click=database_runtest),
+                        ElevatedButton(text='Выйти из приложения', on_click=lambda _: page.window_close())
                     ],
                     vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,

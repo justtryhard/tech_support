@@ -4,7 +4,6 @@ from db.ticket import Ticket, set_closed
 from db.problem import Problem, problem_set_closed
 
 
-
 def create():
     with sqlite3.connect('db/database.db') as db:  # создаём таблицы
         cursor = db.cursor()
@@ -18,7 +17,7 @@ def create():
         cursor.execute(query2)
         cursor.execute(query3)
 
-    # создаём клиентов
+        # создаём клиентов
         query4 = """INSERT INTO clients (id, name, address, ip)
                               VALUES (233, "Рога и Копыта", "Косыгина 23", "10.20.2.23");"""
         query5 = """INSERT INTO clients(id, name, address, ip)
@@ -86,7 +85,7 @@ def create():
     c = Problem()
     c.new_problem('Авиаторов 10', "Авария на трансформаторной подстанции", "289,376",
                   "12/09/2024, 10:00")
-    problem_set_closed(2) # закроем аварию с id=2
+    problem_set_closed(2)  # закроем аварию с id=2
     d = Problem()
     d.new_problem('Ленина 54', "Нет электричества", "954,755",
                   "20/09/2024, 17:00")
@@ -103,3 +102,4 @@ def create():
     i = Ticket()
     (i.new_ticket('567', "85555555555", "Отсутствует услуга"))
     set_closed(2)
+
