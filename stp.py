@@ -11,7 +11,7 @@ current_ticket: int
 current_problem: int
 
 
-def main(page: ft.Page) -> None:
+def main(page: ft.Page) -> None:   # ниже созданы текстовые поля, используемые приложением
     page.title = 'Support'
     ticket_enter = ft.TextField(label="Укажите ID заявки", width=250)
     problem_enter = ft.TextField(label="Укажите ID аварии", width=250)
@@ -23,7 +23,7 @@ def main(page: ft.Page) -> None:
     ticket2 = ft.TextField(label="Введите контактный номер или email", width=400)
     ticket3 = ft.TextField(label="Опишите суть проблемы")
 
-    def btn_click(e):
+    def btn_click(e): # здесь реализован алгоритм составления заявки сотрудником ТП
         cnt = 0
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
@@ -60,7 +60,7 @@ def main(page: ft.Page) -> None:
             page.clean()
             page.go('/new_ticket1')
 
-    def btn_click_for_problem(e):
+    def btn_click_for_problem(e):  # здесь реализован алгоритм создания проблемы сотрудником ТП
         cnt = 0
         if not problem1.value:
             ticket1.error_text = "Введите адрес"
@@ -97,7 +97,7 @@ def main(page: ft.Page) -> None:
             page.clean()
             page.go('/new_problem1')
 
-    def ticket_watch(e):
+    def ticket_watch(e):  # Алгоритм, включающийся при нажатии кнопки просмотра заявки
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
             cursor.execute(""" SELECT id FROM tickets""")
@@ -115,7 +115,7 @@ def main(page: ft.Page) -> None:
                 current_ticket = int(ticket_enter.value)
                 page.go('/tickets2')
 
-    def close_ticket(e):
+    def close_ticket(e):  # Данная функция описывает алгоритм закрытия заявки
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
             cursor.execute(""" SELECT id FROM tickets""")
@@ -129,7 +129,7 @@ def main(page: ft.Page) -> None:
                 page.clean()
                 page.go('/tickets3')
 
-    def problem_watch(e):
+    def problem_watch(e): # Алгоритм, включающийся при нажатии кнопки просмотра проблемы
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
             cursor.execute(""" SELECT id FROM problems""")
@@ -147,12 +147,12 @@ def main(page: ft.Page) -> None:
                 current_problem = int(problem_enter.value)
                 page.go('/problems2')
 
-    def problem_set_ttr(e):
+    def problem_set_ttr(e): # Функция, отвечающая за изменение TTR проблемы сотрудником ТП
         set_ttr(current_problem, ttr_enter.value)
         page.clean()
         page.go('/problems4')
 
-    def close_problem(e):
+    def close_problem(e):  # Функция, отвечающая за закрытие проблемы
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
             cursor.execute(""" SELECT id FROM problems""")
@@ -166,12 +166,12 @@ def main(page: ft.Page) -> None:
                 page.clean()
                 page.go('/problems3')
 
-    def database_runtest(e):
+    def database_runtest(e):  ## функция создания тестовой БД
         database.create()
         page.clean()
         page.go('/')
 
-    def route_change(e: RouteChangeEvent) -> None:
+    def route_change(e: RouteChangeEvent) -> None:          #функция, отвечающая за смену страниц в приложении
         page.views.clear()
 
         page.views.append(

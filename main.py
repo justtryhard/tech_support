@@ -5,17 +5,17 @@ from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAli
 import sqlite3
 from db.ticket import Ticket
 
-user_ip = ""
-ttr: int
+user_ip = ""        # хранит айпи адрес пользователя между взятием из БД и передачей пользователю
+ttr: int            # хранит информацию по срокам аварии между взятием из БД передачей пользователю
 
 
-def main(page: ft.Page) -> None:
+def main(page: ft.Page) -> None:   # текстовые поля для заполнения заявки пользователем
     page.title = 'Support'
     ticket1 = ft.TextField(label="Введите номер договора", width=250)
     ticket2 = ft.TextField(label="Введите контактный номер или email", width=400)
     ticket3 = ft.TextField(label="Опишите суть проблемы")
 
-    def btn_click(e):
+    def btn_click(e):  # здесь реализован алгоритм оставления заявки пользователем
         cnt = 0
         with sqlite3.connect('db/database.db') as db:
             problem_trigger = False
@@ -74,7 +74,7 @@ def main(page: ft.Page) -> None:
             page.clean()
             page.go('/ticket1')
 
-    def btn_click_for_ip(e):
+    def btn_click_for_ip(e):        # здесь реализован алгоритм запроса IP пользователя
         with sqlite3.connect('db/database.db') as db:
             cursor = db.cursor()
             cursor.execute(""" SELECT id, ip FROM clients """)
@@ -93,12 +93,12 @@ def main(page: ft.Page) -> None:
                 page.clean()
                 page.go('/ips1')
 
-    def database_runtest(e):
+    def database_runtest(e): ## функция создания тестовой БД
         database.create()
         page.clean()
         page.go('/')
 
-    def route_change(e: RouteChangeEvent) -> None:
+    def route_change(e: RouteChangeEvent) -> None:   #функция, отвечающая за смену страниц в приложении
         page.views.clear()
 
         page.views.append(

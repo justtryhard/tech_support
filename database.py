@@ -3,6 +3,7 @@ from sqlite3 import Error
 from db.ticket import Ticket, set_closed
 from db.problem import Problem, problem_set_closed
 
+# Здесь создаётся тестовая база данных для проверки функциональности приложения
 
 def create():
     with sqlite3.connect('db/database.db') as db:  # создаём таблицы
